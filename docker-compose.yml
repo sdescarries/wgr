@@ -1,0 +1,28 @@
+version: '3.7'
+
+networks:
+  wgr:
+    name: wgr
+
+services:
+  server:
+    image: node:20-alpine
+    container_name: wgr-server
+    working_dir: /opt/wgr
+    #restart: unless-stopped
+    tty: true
+    volumes:
+      - ./:/opt/wgr
+    command: npm run start
+
+  ngrok:
+    image: ngrok/ngrok:alpine
+    #restart: unless-stopped
+    container_name: wgr-ngrok
+    working_dir: /opt/wgr
+    tty: true
+    ports:
+      - 4040:4040
+    volumes:
+      - ./ngrok:/opt/ngrok
+    command: start --config /opt/ngrok/ngrok.yml --all

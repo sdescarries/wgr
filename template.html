@@ -15,13 +15,14 @@
 </head>
 
 <body>
-  <form method="post" action="./GuestReg.aspx?gymid=%gymid%" id="frmGuest">
+  <form method="post" action="./GuestReg.aspx?gymid=%gymid%" id="frmGuest" autocomplete="on">
     <div class="container">
       <div class="row">
         <div class="col-sm">
+          <div style="height: 1rem;"></div>
 
           <div class="mb-3">
-            <input class="btn btn-primary" type="submit" name="btnSubmit" value="Suivant" id="btnSubmit" />
+            <input class="btn btn-primary" type="submit" name="btnSubmit" value="Suivant" id="btnSubmit1" />
           </div>
 
           <input class="form-control" type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="%VIEWSTATE%" />
@@ -32,32 +33,32 @@
 
           <div class="mb-3">
             <label class="form-label" for="RegCode">RegCode</label>
-            <input class="form-control" name="RegCode" type="password" maxlength="6" id="RegCode" default-value="code"
-              autocomplete="off" autofocus />
+            <input class="form-control" name="RegCode" type="password" maxlength="6" id="RegCode" autocomplete="off"
+              autofocus required />
           </div>
 
           <div class="mb-3">
             <label class="form-label" for="Email">Email</label>
-            <input class="form-control" name="Email" type="email" maxlength="100" id="Email" default-value="email"
-              autocomplete="email" />
+            <input class="form-control" name="Email" type="email" maxlength="100" id="Email" autocomplete="email"
+              required />
           </div>
 
           <div class="mb-3">
             <label class="form-label" for="FirstName">FirstName</label>
             <input class="form-control" name="FirstName" type="text" maxlength="50" id="FirstName"
-              autocomplete="given-name" />
+              autocomplete="given-name" required />
           </div>
 
           <div class="mb-3">
             <label class="form-label" for="LastName">LastName</label>
             <input class="form-control" name="LastName" type="text" maxlength="50" id="LastName"
-              autocomplete="family-name" />
+              autocomplete="family-name" required />
           </div>
 
           <div class="mb-3">
             <label class="form-label" for="YearOfBirth">YearOfBirth</label>
             <input class="form-control" name="YearOfBirth" type="text" maxlength="4" id="YearOfBirth"
-              autocomplete="bday-year" />
+              autocomplete="bday-year" required />
           </div>
 
 
@@ -75,25 +76,25 @@
           <div class="mb-3">
             <label class="form-label" for="StreetAddress">StreetAddress</label>
             <input class="form-control" name="StreetAddress" type="text" maxlength="100" id="StreetAddress"
-              autocomplete="address-level3" />
+              autocomplete="address-level3" required />
           </div>
 
           <div class="mb-3">
             <label class="form-label" for="Appartment">Appartment</label>
             <input class="form-control" name="Appartment" type="text" maxlength="50" id="Appartment"
-              autocomplete="address-level4" />
+              autocomplete="address-level4" required />
           </div>
 
           <div class="mb-3">
             <label class="form-label" for="City">City</label>
-            <input class="form-control" name="City" type="text" maxlength="50" id="City"
-              autocomplete="address-level2" />
+            <input class="form-control" name="City" type="text" maxlength="50" id="City" autocomplete="address-level2"
+              required />
           </div>
 
           <div class="mb-3">
             <label class="form-label" for="StateProv">StateProv</label>
             <input class="form-control" name="StateProv" type="text" maxlength="25" id="StateProv"
-              autocomplete="address-level1" />
+              autocomplete="address-level1" required />
           </div>
 
           <div class="mb-3">
@@ -105,7 +106,7 @@
           <div class="mb-3">
             <label class="form-label" for="PhoneMobile">PhoneMobile</label>
             <input class="form-control" name="PhoneMobile" type="text" maxlength="25" id="PhoneMobile"
-              autocomplete="tel-national" />
+              autocomplete="tel-national" required />
           </div>
 
           <div class="mb-3">
@@ -119,34 +120,37 @@
 
           <div class="mb-3">
             <label class="form-label" for="PromoCode">PromoCode</label>
-            <input class="form-control" name="PromoCode" type="text" maxlength="25" id="PromoCode" autocomplete="off" />
+            <input class="form-control" name="PromoCode" type="text" maxlength="25" id="PromoCode" autocomplete="off"
+              required />
+          </div>
+
+          <div style="display: none;">
+            <div class="mb-3">
+              <label class="form-label" for="GuestServicesAgreement1">GuestServicesAgreement1</label>
+              <input class="form-check-input" checked id="GuestServicesAgreement1" type="checkbox"
+                name="GuestServicesAgreement1" required />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="GuestServicesAgreement2">GuestServicesAgreement2</label>
+              <input class="form-check-input" checked id="GuestServicesAgreement2" type="checkbox"
+                name="GuestServicesAgreement2" required />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="GuestServicesAgreement3">GuestServicesAgreement3</label>
+              <input class="form-check-input" checked id="GuestServicesAgreement3" type="checkbox"
+                name="GuestServicesAgreement3" required />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="Agreement">Agreement</label>
+              <input class="form-check-input" checked id="Agreement" type="checkbox" name="Agreement" required />
+            </div>
           </div>
 
           <div class="mb-3">
-            <label class="form-label" for="GuestServicesAgreement1">GuestServicesAgreement1</label>
-            <input class="form-check-input" checked id="GuestServicesAgreement1" type="checkbox"
-              name="GuestServicesAgreement1" />
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label" for="GuestServicesAgreement2">GuestServicesAgreement2</label>
-            <input class="form-check-input" checked id="GuestServicesAgreement2" type="checkbox"
-              name="GuestServicesAgreement2" />
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label" for="GuestServicesAgreement3">GuestServicesAgreement3</label>
-            <input class="form-check-input" checked id="GuestServicesAgreement3" type="checkbox"
-              name="GuestServicesAgreement3" />
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label" for="Agreement">Agreement</label>
-            <input class="form-check-input" checked id="Agreement" type="checkbox" name="Agreement" />
-          </div>
-
-          <div class="mb-3">
-            <input class="btn btn-primary" type="submit" name="btnSubmit" value="Suivant" id="btnSubmit" />
+            <input class="btn btn-primary" type="submit" name="btnSubmit" value="Suivant" id="btnSubmit2" />
           </div>
 
         </div>
@@ -159,8 +163,13 @@
 
 <script>
 
-  const saveInput = (e) =>
+  function saveInput(e) {
+    if (/Gender[MF]/.test(e.target.id)) {
+      localStorage.removeItem('WQG_cache_GenderM');
+      localStorage.removeItem('WQG_cache_GenderF');
+    }
     localStorage.setItem(`WQG_cache_${e.target.id}`, e.target.value);
+  }
 
   for (const input of document.getElementsByTagName("input")) {
     input.onchange = saveInput;

@@ -6,7 +6,9 @@ networks:
 
 services:
   server:
-    image: node:20-alpine
+    build:
+      dockerfile: bun.Dockerfile
+    image: ghcr.io/sdescarries/wgr
     container_name: wgr-server
     working_dir: /opt/wgr
     #restart: unless-stopped

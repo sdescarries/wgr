@@ -2,21 +2,20 @@ import axios, { AxiosResponse } from "axios";
 
 import Koa from "koa";
 import bodyParser from 'koa-body';
-import fs from "fs";
 import { parse } from 'node-html-parser';
 import setCookie from 'set-cookie-parser';
 
 const app = new Koa();
 
-app.use(bodyParser({   multipart: true,
-  urlencoded: true
+app.use(bodyParser({
+  multipart: true,
+  urlencoded: true,
 }));
 
 const gymid = "10";
 const urlOrigin = 'https://ggpx.info';
 const urlGuestReg = `${urlOrigin}/GuestReg.aspx?gymid=${gymid}`;
 const sessionCookie = 'ASP.NET_SessionId';
-const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.5563.65 Safari/537.36';
 
 interface Keys {
   VIEWSTATE?: string;
@@ -24,8 +23,8 @@ interface Keys {
   EVENTVALIDATION?: string;
 }
 
-function body(keys: Keys): string {
-  const template = fs.readFileSync("./template.html", "utf-8");
+async function body(keys: Keys): Promise<string> {
+  const template = await Bun.file('./template.html').text();
   let output = template.replace(`%gymid%`, gymid);
   for (const [key, value] of Object.entries(keys)) {
     output = output.replace(`%${key}%`, value);
@@ -61,6 +60,7 @@ async function load(ctx: Koa.Context, next: Koa.Next): Promise<void> {
   }
 
   if (ctx.path === '/favicon.ico') {
+    ctx.response.status = 204;
     return next();
   }
 
@@ -69,15 +69,16 @@ async function load(ctx: Koa.Context, next: Koa.Next): Promise<void> {
     const proxy = await axios.get(
       `${urlOrigin}${ctx.path}`,
       {
-        responseType: 'stream',
-        maxRedirects: 0,
-        withCredentials: true,
         decompress: false,
+        maxRedirects: 0,
+        responseType: 'stream',
+        withCredentials: true,
         headers: {
+          'Accept-Encoding': 'deflate, gzip',
           'Cookie': `${sessionCookie}=${session};`,
           'Origin': urlOrigin,
           'Referer': urlGuestReg,
-          'User-Agent': userAgent,
+          'User-Agent': ctx.get('User-Agent'),
         }
       }).catch(error => error.response);
 
@@ -85,7 +86,12 @@ async function load(ctx: Koa.Context, next: Koa.Next): Promise<void> {
     return next();
   }
 
-  const { data } = await axios.get(urlGuestReg);
+  const { data } = await axios.get(urlGuestReg, {
+    headers: {
+      'Accept-Encoding': 'deflate, gzip',
+      'User-Agent': ctx.get('User-Agent'),
+    }
+  });
   const root = parse(data);
 
   const VIEWSTATE = root.getElementById("__VIEWSTATE").getAttribute('value');
@@ -93,7 +99,7 @@ async function load(ctx: Koa.Context, next: Koa.Next): Promise<void> {
   const EVENTVALIDATION = root.getElementById("__EVENTVALIDATION").getAttribute('value');
 
   ctx.response.type = "html";
-  ctx.response.body = body({
+  ctx.response.body = await body({
     VIEWSTATE,
     VIEWSTATEGENERATOR,
     EVENTVALIDATION,
@@ -107,16 +113,17 @@ async function submit(ctx: Koa.Context, next: Koa.Next): Promise<void> {
 
   const { body } = ctx.request;
   const debugFile = `debug/submit-${new Date().toISOString()}`;
-  fs.writeFileSync(debugFile + '.json', JSON.stringify(body, null, 2), 'utf-8');
+  await Bun.write(debugFile + '.json', JSON.stringify(body, null, 2));
 
   const proxy = await axios.postForm(
     urlGuestReg,
     body,
     {
       headers: {
+        'Accept-Encoding': 'deflate, gzip',
         'Origin': urlOrigin,
         'Referer': urlGuestReg,
-        'User-Agent': userAgent,
+        'User-Agent': ctx.get('User-Agent'),
       },
       maxRedirects: 0,
       withCredentials: true,
@@ -174,6 +181,7 @@ async function debug(ctx: Koa.Context, next: Koa.Next): Promise<void> {
         maxRedirects: 0,
         withCredentials: true,
         headers: {
+          'Accept-Encoding': 'deflate, gzip',
           'Cookie': `foo=${session};`,
         }
       }).catch(error => error.response);

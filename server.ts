@@ -1,5 +1,3 @@
-import axios, { AxiosResponse } from "axios";
-
 import Koa from "koa";
 import bodyParser from 'koa-body';
 import { parse } from 'node-html-parser';
@@ -42,15 +40,15 @@ const importantHeaders = [
   'etag',
 ] as const;
 
-function fwdResponse(proxy: AxiosResponse, ctx: Koa.Context) {
+function fwdResponse(proxy: Response, ctx: Koa.Context) {
   importantHeaders.forEach(header => {
-    const value = proxy.headers[header];
+    const value = proxy.headers.get(header);
     if (value) {
       ctx.set(header, value);
     }
   })
   ctx.status = proxy.status;
-  ctx.body = proxy.data;
+  ctx.body = proxy.body;
 }
 
 async function load(ctx: Koa.Context, next: Koa.Next): Promise<void> {
@@ -66,15 +64,13 @@ async function load(ctx: Koa.Context, next: Koa.Next): Promise<void> {
 
   if (ctx.path !== '/') {
     const session = ctx.cookies.get(sessionCookie);
-    const proxy = await axios.get(
+    const proxy = await fetch(
       `${urlOrigin}${ctx.path}`,
       {
-        decompress: false,
-        maxRedirects: 0,
-        responseType: 'stream',
-        withCredentials: true,
+        redirect: 'manual',
+        credentials: 'include',
         headers: {
-          'Accept-Encoding': 'deflate, gzip',
+          'Accept-Encoding': 'identity',
           'Cookie': `${sessionCookie}=${session};`,
           'Origin': urlOrigin,
           'Referer': urlGuestReg,
@@ -86,13 +82,14 @@ async function load(ctx: Koa.Context, next: Koa.Next): Promise<void> {
     return next();
   }
 
-  const { data } = await axios.get(urlGuestReg, {
+  const root = await fetch(urlGuestReg, {
     headers: {
-      'Accept-Encoding': 'deflate, gzip',
+      'Accept-Encoding': 'identity',
       'User-Agent': ctx.get('User-Agent'),
     }
-  });
-  const root = parse(data);
+  })
+    .then(response => response.text())
+    .then(parse);
 
   const VIEWSTATE = root.getElementById("__VIEWSTATE").getAttribute('value');
   const VIEWSTATEGENERATOR = root.getElementById("__VIEWSTATEGENERATOR").getAttribute('value');
@@ -115,18 +112,20 @@ async function submit(ctx: Koa.Context, next: Koa.Next): Promise<void> {
   const debugFile = `debug/submit-${new Date().toISOString()}`;
   await Bun.write(debugFile + '.json', JSON.stringify(body, null, 2));
 
-  const proxy = await axios.postForm(
+  const proxy = await fetch(
     urlGuestReg,
-    body,
     {
+      verbose: true,
+      method: 'POST',
+      body,
       headers: {
-        'Accept-Encoding': 'deflate, gzip',
+        'Accept-Encoding': 'identity',
         'Origin': urlOrigin,
         'Referer': urlGuestReg,
         'User-Agent': ctx.get('User-Agent'),
       },
-      maxRedirects: 0,
-      withCredentials: true,
+      redirect: 'manual',
+      credentials: 'include',
     }).catch(error => error.response);
 
   const cookies = setCookie(proxy, { map: true });
@@ -135,7 +134,7 @@ async function submit(ctx: Koa.Context, next: Koa.Next): Promise<void> {
     return fwdResponse(proxy, ctx);
   }
 
-  console.log(`New session: ${session}`);
+  console.write(`New session: ${session}`);
   ctx.cookies.set(sessionCookie, session);
   return ctx.redirect('/GuestRegConfirm.aspx?gymid=10');
 }
@@ -143,57 +142,56 @@ async function submit(ctx: Koa.Context, next: Koa.Next): Promise<void> {
 async function debug(ctx: Koa.Context, next: Koa.Next): Promise<void> {
 
   if (ctx.path === '/redirect') {
-    console.log(`/redirect`);
-    const proxy: AxiosResponse = await axios.get(
+    console.write(`/redirect`);
+    const proxy: Response = await fetch(
       `http://localhost:3000/challenge`,
       {
-        maxRedirects: 0,
-        responseType: 'stream',
-        withCredentials: true,
+        redirect: 'manual',
+        credentials: 'include',
       }).catch(error => error.response);
-    const cookies = setCookie(proxy, { map: true });
-    console.log(cookies);
+    const cookies = setCookie(proxy.headers.getAll('Set-Cookie'), { map: true });
+    Object.entries(cookies).forEach(([name, value]) => console.write(`${name}: ${value}`));
 
     ctx.cookies.set('foo', cookies['foo'].value);
     ctx.response.type = "html";
-    if (proxy.status === 302) {
-      ctx.redirect(proxy.headers['location']);
+    const location = proxy.headers.get('location');
+    if (proxy.status === 302 && location) {
+      ctx.redirect(location);
     }
-    console.log(`/redirect: OK`);
+    console.write(`/redirect: OK`);
     return;
   }
 
   if (ctx.path === '/challenge') {
     ctx.cookies.set('foo', new Date().toLocaleDateString());
     ctx.redirect('/redirected');
-    console.log(`/challenge: OK`);
+    console.write(`/challenge: OK`);
     return;
   }
 
   if (ctx.path === '/redirected') {
     const session = ctx.cookies.get('foo');
 
-    console.log(`/redirected: ${session}`);
-    const proxy = await axios.get(
+    console.write(`/redirected: ${session}`);
+    const proxy = await fetch(
       `http://localhost:3000/loopy`,
       {
-        responseType: 'stream',
-        maxRedirects: 0,
-        withCredentials: true,
+        redirect: 'manual',
+        credentials: 'include',
         headers: {
-          'Accept-Encoding': 'deflate, gzip',
+          'Accept-Encoding': 'identity',
           'Cookie': `foo=${session};`,
         }
       }).catch(error => error.response);
 
     fwdResponse(proxy, ctx);
-    console.log(`/redirected: OK`);
+    console.write(`/redirected: OK`);
     return;
   }
 
   if (ctx.path === "/loopy") {
     const session = ctx.cookies.get('foo');
-    console.log(`/loopy: ${session}`);
+    console.write(`/loopy: ${session}`);
 
     ctx.response.type = "html";
     if (session) {
@@ -212,4 +210,4 @@ app.use(load);
 app.use(submit);
 app.use(debug);
 
-app.listen(3000);
+app.listen(3000, () => console.write(`\nListening: http://localhost:${3000}/\n\n`));

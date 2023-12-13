@@ -10,12 +10,12 @@ services:
       dockerfile: bun.Dockerfile
     image: ghcr.io/sdescarries/wgr
     container_name: wgr-server
-    working_dir: /opt/wgr
     #restart: unless-stopped
     tty: true
     volumes:
-      - ./:/opt/wgr
-    command: npm run start
+      - ./debug:/home/wgr/debug
+    ports:
+      - 3000:3000
 
   ngrok:
     image: ngrok/ngrok:alpine

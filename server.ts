@@ -31,16 +31,16 @@ async function body(keys: Keys): Promise<string> {
 };
 
 const importantHeaders = [
-  'cache-control',
-  'content-disposition',
-  'content-encoding',
-  'content-length',
-  'content-type',
-  'last-modified',
-  'etag',
+  'Cache-Control',
+  'Content-Disposition',
+  'Content-Encoding',
+  'Content-Length',
+  'Content-Type',
+  'Last-Modified',
+  'ETag',
 ] as const;
 
-function fwdResponse(proxy: Response, ctx: Koa.Context) {
+async function fwdResponse(proxy: Response, ctx: Koa.Context) {
   importantHeaders.forEach(header => {
     const value = proxy.headers.get(header);
     if (value) {
@@ -48,7 +48,12 @@ function fwdResponse(proxy: Response, ctx: Koa.Context) {
     }
   })
   ctx.status = proxy.status;
-  ctx.body = proxy.body;
+
+  if (proxy.body == null) {
+    return;
+  }
+  const arrBuf = await Bun.readableStreamToArrayBuffer(proxy.body);
+  ctx.body = Buffer.from(arrBuf);
 }
 
 async function load(ctx: Koa.Context, next: Koa.Next): Promise<void> {
@@ -64,21 +69,23 @@ async function load(ctx: Koa.Context, next: Koa.Next): Promise<void> {
 
   if (ctx.path !== '/') {
     const session = ctx.cookies.get(sessionCookie);
-    const proxy = await fetch(
+    const proxy: Response = await fetch(
       `${urlOrigin}${ctx.path}`,
       {
         redirect: 'manual',
         credentials: 'include',
         headers: {
-          'Accept-Encoding': 'identity',
+          'Accept': ctx.get('Accept'),
+          'Accept-Encoding': ctx.get('Accept-Encoding'),
           'Cookie': `${sessionCookie}=${session};`,
           'Origin': urlOrigin,
           'Referer': urlGuestReg,
           'User-Agent': ctx.get('User-Agent'),
-        }
-      }).catch(error => error.response);
+        },
+        verbose: true,
+      });
 
-    fwdResponse(proxy, ctx);
+    await fwdResponse(proxy, ctx);
     return next();
   }
 
@@ -86,7 +93,8 @@ async function load(ctx: Koa.Context, next: Koa.Next): Promise<void> {
     headers: {
       'Accept-Encoding': 'identity',
       'User-Agent': ctx.get('User-Agent'),
-    }
+    },
+    verbose: true,
   })
     .then(response => response.text())
     .then(parse);
@@ -112,7 +120,7 @@ async function submit(ctx: Koa.Context, next: Koa.Next): Promise<void> {
   const debugFile = `debug/submit-${new Date().toISOString()}`;
   await Bun.write(debugFile + '.json', JSON.stringify(body, null, 2));
 
-  const proxy = await fetch(
+  const proxy: Response = await fetch(
     urlGuestReg,
     {
       verbose: true,
@@ -126,7 +134,7 @@ async function submit(ctx: Koa.Context, next: Koa.Next): Promise<void> {
       },
       redirect: 'manual',
       credentials: 'include',
-    }).catch(error => error.response);
+    });
 
   const cookies = setCookie(proxy, { map: true });
   const session = cookies[sessionCookie]?.value;
@@ -134,7 +142,7 @@ async function submit(ctx: Koa.Context, next: Koa.Next): Promise<void> {
     return fwdResponse(proxy, ctx);
   }
 
-  console.write(`New session: ${session}`);
+  console.write(`New session: ${session}\n`);
   ctx.cookies.set(sessionCookie, session);
   return ctx.redirect('/GuestRegConfirm.aspx?gymid=10');
 }
@@ -142,15 +150,16 @@ async function submit(ctx: Koa.Context, next: Koa.Next): Promise<void> {
 async function debug(ctx: Koa.Context, next: Koa.Next): Promise<void> {
 
   if (ctx.path === '/redirect') {
-    console.write(`/redirect`);
+    console.write(`/redirect\n`);
     const proxy: Response = await fetch(
       `http://localhost:3000/challenge`,
       {
-        redirect: 'manual',
         credentials: 'include',
-      }).catch(error => error.response);
+        redirect: 'manual',
+        verbose: true,
+      });
     const cookies = setCookie(proxy.headers.getAll('Set-Cookie'), { map: true });
-    Object.entries(cookies).forEach(([name, value]) => console.write(`${name}: ${value}`));
+    Object.entries(cookies).forEach(([name, value]) => console.write(`${name}: ${value}\n`));
 
     ctx.cookies.set('foo', cookies['foo'].value);
     ctx.response.type = "html";
@@ -158,40 +167,41 @@ async function debug(ctx: Koa.Context, next: Koa.Next): Promise<void> {
     if (proxy.status === 302 && location) {
       ctx.redirect(location);
     }
-    console.write(`/redirect: OK`);
+    console.write(`/redirect: OK\n`);
     return;
   }
 
   if (ctx.path === '/challenge') {
     ctx.cookies.set('foo', new Date().toLocaleDateString());
     ctx.redirect('/redirected');
-    console.write(`/challenge: OK`);
+    console.write(`/challenge: OK\n`);
     return;
   }
 
   if (ctx.path === '/redirected') {
     const session = ctx.cookies.get('foo');
 
-    console.write(`/redirected: ${session}`);
-    const proxy = await fetch(
+    console.write(`/redirected: ${session}\n`);
+    const proxy: Response = await fetch(
       `http://localhost:3000/loopy`,
       {
-        redirect: 'manual',
         credentials: 'include',
+        redirect: 'manual',
+        verbose: true,
         headers: {
           'Accept-Encoding': 'identity',
           'Cookie': `foo=${session};`,
-        }
-      }).catch(error => error.response);
+        },
+      });
 
-    fwdResponse(proxy, ctx);
-    console.write(`/redirected: OK`);
+    await fwdResponse(proxy, ctx);
+    console.write(`/redirected: OK\n`);
     return;
   }
 
   if (ctx.path === "/loopy") {
     const session = ctx.cookies.get('foo');
-    console.write(`/loopy: ${session}`);
+    console.write(`/loopy: ${session}\n`);
 
     ctx.response.type = "html";
     if (session) {

@@ -1,26 +1,24 @@
 {
-  "name": "backend",
-  "version": "1.0.0",
-  "description": "",
-  "scripts": {
-    "start": "ts-node-dev --respawn --transpile-only server.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "name": "@sdescarries/wgr",
+  "version": "0.1.0",
+  "description": "WorldGym Registration Proxy",
+  "engines": {
+    "bun": "^1.0.0"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "scripts": {
+    "start": "bun run --watch server.ts"
+  },
+  "author": "Simon Descarries",
+  "license": "UNLICENSED",
   "dependencies": {
-    "@types/koa": "^2.13.12",
-    "@types/node": "^20.10.2",
     "koa": "^2.14.2",
     "koa-body": "^6.0.1",
     "node-html-parser": "^6.1.11",
-    "set-cookie-parser": "^2.6.0",
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^5.3.2"
+    "set-cookie-parser": "^2.6.0"
   },
   "devDependencies": {
     "@types/set-cookie-parser": "^2.4.7",
+    "@types/koa": "^2.13.12",
     "bun-types": "^1.0.16"
   }
 }

@@ -10,7 +10,7 @@ services:
       dockerfile: bun.Dockerfile
     image: ghcr.io/sdescarries/wgr
     container_name: wgr-bun
-    #restart: unless-stopped
+    restart: always
     tty: true
     volumes:
       - ./debug:/home/wgr/debug
@@ -19,7 +19,7 @@ services:
 
   ngrok:
     image: ngrok/ngrok:alpine
-    #restart: unless-stopped
+    restart: always
     container_name: wgr-ngrok
     working_dir: /opt/ngrok
     tty: true

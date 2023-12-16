@@ -22,4 +22,4 @@ COPY . /home/wgr/
 RUN bun install
 
 ENTRYPOINT [ "bun" ]
-CMD [ "./server.ts" ]
+CMD [ "run", "--watch", "./server.ts" ]

@@ -8,7 +8,7 @@ region: us
 tunnels:
   wgr:
     proto: http
-    addr: wgr:3000
+    addr: wgr-bun:3000
     domain: fill-me.ngrok-free.app
     oauth:
       provider: "google"

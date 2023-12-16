@@ -5,23 +5,23 @@ networks:
     name: wgr
 
 services:
-  server:
+  bun:
     build:
       dockerfile: bun.Dockerfile
     image: ghcr.io/sdescarries/wgr
-    container_name: wgr-server
+    container_name: wgr-bun
     #restart: unless-stopped
     tty: true
     volumes:
       - ./debug:/home/wgr/debug
     ports:
-      - 3000:3000
+      - 3000
 
   ngrok:
     image: ngrok/ngrok:alpine
     #restart: unless-stopped
     container_name: wgr-ngrok
-    working_dir: /opt/wgr
+    working_dir: /opt/ngrok
     tty: true
     ports:
       - 4040:4040

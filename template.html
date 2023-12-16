@@ -187,8 +187,6 @@
 
     if (!initValue) {
       const value = localStorage.getItem(`WQG_cache_${id}`) ?? '';
-      console.log(`loading data for ${id}: "${value}"`);
-
       if (type === "checkbox") {
         if (value) {
           input.setAttribute("checked", value);

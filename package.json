@@ -1,0 +1,24 @@
+{
+  "name": "@sdescarries/wgr",
+  "version": "0.1.0",
+  "description": "WorldGym Registration Proxy",
+  "engines": {
+    "bun": "^1.0.0"
+  },
+  "scripts": {
+    "start": "bun run --watch server.ts"
+  },
+  "author": "Simon Descarries",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "koa": "^2.14.2",
+    "koa-body": "^6.0.1",
+    "node-html-parser": "^6.1.11",
+    "set-cookie-parser": "^2.6.0"
+  },
+  "devDependencies": {
+    "@types/set-cookie-parser": "^2.4.7",
+    "@types/koa": "^2.13.12",
+    "bun-types": "^1.0.16"
+  }
+}

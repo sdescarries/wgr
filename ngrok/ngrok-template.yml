@@ -1,0 +1,17 @@
+version: "2"
+
+authtoken: fill-me
+
+log: stdout
+region: us
+
+tunnels:
+  wgr:
+    proto: http
+    addr: wgr-bun:3000
+    domain: fill-me.ngrok-free.app
+    oauth:
+      provider: "google"
+      allow_emails: [
+        "fill-me",
+      ]

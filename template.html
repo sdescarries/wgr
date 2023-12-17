@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+  <title>Bienvenue à World Gym Québec</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+  <form method="post" action="./GuestReg.aspx?gymid=%gymid%" id="frmGuest" autocomplete="on">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm">
+          <div style="height: 1rem;"></div>
+
+          <div class="mb-3">
+            <input class="btn btn-primary" type="submit" name="btnSubmit" value="Suivant" id="btnSubmit1" />
+          </div>
+
+          <input class="form-control" type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="%VIEWSTATE%" />
+          <input class="form-control" type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR"
+            value="%VIEWSTATEGENERATOR%" />
+          <input class="form-control" type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION"
+            value="%EVENTVALIDATION%" />
+
+          <div class="mb-3">
+            <label class="form-label" for="RegCode">RegCode</label>
+            <input class="form-control" name="RegCode" type="password" maxlength="6" id="RegCode" autocomplete="off"
+              autofocus required />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="Email">Email</label>
+            <input class="form-control" name="Email" type="email" maxlength="100" id="Email" autocomplete="email"
+              required />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="FirstName">FirstName</label>
+            <input class="form-control" name="FirstName" type="text" maxlength="50" id="FirstName"
+              autocomplete="given-name" required />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="LastName">LastName</label>
+            <input class="form-control" name="LastName" type="text" maxlength="50" id="LastName"
+              autocomplete="family-name" required />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="YearOfBirth">YearOfBirth</label>
+            <input class="form-control" name="YearOfBirth" type="text" maxlength="4" id="YearOfBirth"
+              autocomplete="bday-year" required />
+          </div>
+
+
+          <div class="mb-3">
+            <label class="form-label" for="GenderM">Homme</label>
+            <input class="form-check-input" id="GenderM" type="checkbox" name="GenderM" />
+          </div>
+
+
+          <div class="mb-3">
+            <label class="form-label" for="GenderF">Femme</label>
+            <input class="form-check-input" id="GenderF" type="checkbox" name="GenderF" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="StreetAddress">StreetAddress</label>
+            <input class="form-control" name="StreetAddress" type="text" maxlength="100" id="StreetAddress"
+              autocomplete="address-level3" required />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="Appartment">Appartment</label>
+            <input class="form-control" name="Appartment" type="text" maxlength="50" id="Appartment"
+              autocomplete="address-level4" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="City">City</label>
+            <input class="form-control" name="City" type="text" maxlength="50" id="City" autocomplete="address-level2"
+              required />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="StateProv">StateProv</label>
+            <input class="form-control" name="StateProv" type="text" maxlength="25" id="StateProv"
+              autocomplete="address-level1" required />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="PostalCode">PostalCode</label>
+            <input class="form-control" name="PostalCode" type="text" maxlength="15" id="PostalCode"
+              autocomplete="postal-code" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="PhoneMobile">PhoneMobile</label>
+            <input class="form-control" name="PhoneMobile" type="text" maxlength="25" id="PhoneMobile"
+              autocomplete="tel-national" required />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="LastName">GuestPassType</label>
+            <select class="form-select" name="GuestPassType" id="GuestPassType">
+              <option selected value="GVM">Membre VIP</option>
+              <option value="GPC">Essai gratuit</option>
+              <option value="PD">Achat passe</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="PromoCode">PromoCode</label>
+            <input class="form-control" name="PromoCode" type="text" maxlength="25" id="PromoCode" autocomplete="off"
+              required />
+          </div>
+
+          <div style="display: none;">
+            <div class="mb-3">
+              <label class="form-label" for="GuestServicesAgreement1">GuestServicesAgreement1</label>
+              <input class="form-check-input" checked id="GuestServicesAgreement1" type="checkbox"
+                name="GuestServicesAgreement1" required />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="GuestServicesAgreement2">GuestServicesAgreement2</label>
+              <input class="form-check-input" checked id="GuestServicesAgreement2" type="checkbox"
+                name="GuestServicesAgreement2" required />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="GuestServicesAgreement3">GuestServicesAgreement3</label>
+              <input class="form-check-input" checked id="GuestServicesAgreement3" type="checkbox"
+                name="GuestServicesAgreement3" required />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="Agreement">Agreement</label>
+              <input class="form-check-input" checked id="Agreement" type="checkbox" name="Agreement" required />
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <input class="btn btn-primary" type="submit" name="btnSubmit" value="Suivant" id="btnSubmit2" />
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </form>
+
+</body>
+
+<script>
+
+  function saveInput(e) {
+    if (/Gender[MF]/.test(e.target.id)) {
+      localStorage.removeItem('WQG_cache_GenderM');
+      localStorage.removeItem('WQG_cache_GenderF');
+    }
+    localStorage.setItem(`WQG_cache_${e.target.id}`, e.target.value);
+  }
+
+  for (const input of document.getElementsByTagName("input")) {
+    input.onchange = saveInput;
+    const id = input.getAttribute('id');
+    const type = input.getAttribute('type');
+    const initValue = input.getAttribute('value');
+
+    if (!['text', 'email', 'checkbox'].includes(type)) {
+      continue;
+    }
+
+    if (!initValue) {
+      const value = localStorage.getItem(`WQG_cache_${id}`) ?? '';
+      if (type === "checkbox") {
+        if (value) {
+          input.setAttribute("checked", value);
+        }
+      } else {
+        input.setAttribute('value', value);
+      }
+    }
+  }
+
+</script>
+
+</html>

@@ -1,0 +1,30 @@
+version: '3.7'
+
+networks:
+  wgr:
+    name: wgr
+
+services:
+  bun:
+    build:
+      dockerfile: bun.Dockerfile
+    image: ghcr.io/sdescarries/wgr
+    container_name: wgr-bun
+    restart: always
+    tty: true
+    volumes:
+      - ./debug:/home/wgr/debug
+    ports:
+      - 3000
+
+  ngrok:
+    image: ngrok/ngrok:alpine
+    restart: always
+    container_name: wgr-ngrok
+    working_dir: /opt/ngrok
+    tty: true
+    ports:
+      - 4040:4040
+    volumes:
+      - ./ngrok:/opt/ngrok
+    command: start --config /opt/ngrok/ngrok.yml --all

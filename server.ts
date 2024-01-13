@@ -118,7 +118,9 @@ async function submit(ctx: Koa.Context, next: Koa.Next): Promise<void> {
 
   const { body } = ctx.request;
   const debugFile = `debug/submit-${new Date().toISOString()}`;
-  await Bun.write(debugFile + '.json', JSON.stringify(body, null, 2));
+  const bodyStr = JSON.stringify(body, null, 2);
+  Bun.write(debugFile + '.json', bodyStr).catch(error =>
+    console.write(`Failed saving debug info: ${error.message}\n\n${bodyStr}\n\n`));
 
   const proxy: Response = await fetch(
     urlGuestReg,

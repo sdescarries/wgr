@@ -37,8 +37,8 @@
 
           <div class="mb-3">
             <label class="form-label" for="RegCode">RegCode</label>
-            <input class="form-control" name="RegCode" type="password" maxlength="6" id="RegCode" autocomplete="off"
-              autofocus required />
+            <input class="form-control" name="RegCode" type="text" maxlength="6" id="RegCode" autocomplete="off"
+              pattern="[A-Z,0-9]{6}" autofocus required />
           </div>
 
           <div class="mb-3">
@@ -84,7 +84,7 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label" for="Appartment">Appartment</label>
+            <label class="form-label" for="Appartment">Apartment</label>
             <input class="form-control" name="Appartment" type="text" maxlength="50" id="Appartment"
               autocomplete="address-level4" />
           </div>

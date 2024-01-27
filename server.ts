@@ -22,10 +22,10 @@ interface Keys {
 }
 
 async function body(keys: Keys): Promise<string> {
-  const template = await Bun.file('./template.html').text();
-  let output = template.replace(`%gymid%`, gymid);
+  const template = await Bun.file('./template.html').text() as string;
+  let output = template.replaceAll(`%gymid%`, gymid);
   for (const [key, value] of Object.entries(keys)) {
-    output = output.replace(`%${key}%`, value);
+    output = output.replaceAll(`%${key}%`, value);
   }
   return output;
 };
@@ -137,7 +137,7 @@ async function submit(ctx: Koa.Context, next: Koa.Next): Promise<void> {
       credentials: 'include',
     });
 
-  const cookies = setCookie(proxy, { map: true });
+  const cookies = setCookie(proxy.headers.get('Set-Cookie') ?? '', { map: true });
   const session = cookies[sessionCookie]?.value;
   if (!session) {
     return fwdResponse(proxy, ctx);
@@ -159,7 +159,7 @@ async function debug(ctx: Koa.Context, next: Koa.Next): Promise<void> {
         redirect: 'manual',
         verbose: true,
       });
-    const cookies = setCookie(proxy.headers.getAll('Set-Cookie'), { map: true });
+    const cookies = setCookie(proxy.headers.get('Set-Cookie') ?? '', { map: true });
     Object.entries(cookies).forEach(([name, value]) => console.write(`${name}: ${value}\n`));
 
     ctx.cookies.set('foo', cookies['foo'].value);

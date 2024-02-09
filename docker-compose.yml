@@ -14,6 +14,8 @@ services:
     tty: true
     volumes:
       - ./debug:/home/wgr/debug
+      - ./server.ts:/home/wgr/server.ts
+      - ./template.html:/home/wgr/template.html
     ports:
       - 3000
 
@@ -26,5 +28,5 @@ services:
     ports:
       - 4040:4040
     volumes:
-      - ./ngrok:/opt/ngrok
+      - ./ngrok:/opt/ngrok:ro
     command: start --config /opt/ngrok/ngrok.yml --all

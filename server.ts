@@ -33,7 +33,6 @@ async function body(keys: Keys): Promise<string> {
 const importantHeaders = [
   'Cache-Control',
   'Content-Disposition',
-  'Content-Encoding',
   'Content-Length',
   'Content-Type',
   'Last-Modified',
@@ -99,9 +98,9 @@ async function load(ctx: Koa.Context, next: Koa.Next): Promise<void> {
     .then(response => response.text())
     .then(parse);
 
-  const VIEWSTATE = root.getElementById("__VIEWSTATE").getAttribute('value');
-  const VIEWSTATEGENERATOR = root.getElementById("__VIEWSTATEGENERATOR").getAttribute('value');
-  const EVENTVALIDATION = root.getElementById("__EVENTVALIDATION").getAttribute('value');
+  const VIEWSTATE = root.getElementById("__VIEWSTATE")?.getAttribute('value');
+  const VIEWSTATEGENERATOR = root.getElementById("__VIEWSTATEGENERATOR")?.getAttribute('value');
+  const EVENTVALIDATION = root.getElementById("__EVENTVALIDATION")?.getAttribute('value');
 
   ctx.response.type = "html";
   ctx.response.body = await body({

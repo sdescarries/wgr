@@ -15,10 +15,9 @@ RUN curl -fsSL https://bun.sh/install | bash
 ENV BUN_INSTALL="/home/wgr/.bun"
 ENV PATH="${BUN_INSTALL}/bin:${PATH}"
 
-RUN bun --version
-
 COPY . /home/wgr/
 
+RUN bun --version > /home/wgr/bun-version.txt
 RUN bun install
 
 ENTRYPOINT [ "bun" ]

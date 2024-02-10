@@ -89,26 +89,34 @@ async function load(ctx: Koa.Context, next: Koa.Next): Promise<void> {
     return next();
   }
 
-  const root = await fetch(urlGuestReg, {
-    headers: {
-      'Accept-Encoding': 'identity',
-      'User-Agent': ctx.get('User-Agent'),
-    },
-    verbose: true,
-  })
-    .then(response => response.text())
-    .then(parse);
+  {
+    const proxy = await fetch(urlGuestReg, {
+      headers: {
+        'Accept-Encoding': 'identity',
+        'User-Agent': ctx.get('User-Agent'),
+      },
+      verbose: true,
+    });
 
-  const VIEWSTATE = root.getElementById("__VIEWSTATE")?.getAttribute('value');
-  const VIEWSTATEGENERATOR = root.getElementById("__VIEWSTATEGENERATOR")?.getAttribute('value');
-  const EVENTVALIDATION = root.getElementById("__EVENTVALIDATION")?.getAttribute('value');
+    const root = await proxy.text().then(parse);
+    const VIEWSTATE = root.getElementById("__VIEWSTATE")?.getAttribute('value');
+    const VIEWSTATEGENERATOR = root.getElementById("__VIEWSTATEGENERATOR")?.getAttribute('value');
+    const EVENTVALIDATION = root.getElementById("__EVENTVALIDATION")?.getAttribute('value');
+    const cookies = setCookie(proxy.headers.get('Set-Cookie') ?? '', { map: true });
+    const session = cookies[sessionCookie]?.value;
+    if (!session) {
+      throw new Error('No session cookie found');
+    }
 
-  ctx.response.type = "html";
-  ctx.response.body = await body({
-    VIEWSTATE,
-    VIEWSTATEGENERATOR,
-    EVENTVALIDATION,
-  });
+    console.write(`New session: ${session}\n`);
+    ctx.cookies.set(sessionCookie, session);
+    ctx.response.type = "html";
+    ctx.response.body = await body({
+      VIEWSTATE,
+      VIEWSTATEGENERATOR,
+      EVENTVALIDATION,
+    });
+  }
 }
 
 async function submit(ctx: Koa.Context, next: Koa.Next): Promise<void> {
@@ -117,6 +125,7 @@ async function submit(ctx: Koa.Context, next: Koa.Next): Promise<void> {
   }
 
   const { body } = ctx.request;
+  const session = ctx.cookies.get(sessionCookie);
   const debugFile = `debug/submit-${new Date().toISOString()}`;
   const bodyStr = JSON.stringify(body, null, 2);
   Bun.write(debugFile + '.json', bodyStr).catch(error =>
@@ -130,6 +139,7 @@ async function submit(ctx: Koa.Context, next: Koa.Next): Promise<void> {
       body,
       headers: {
         'Accept-Encoding': 'identity',
+        'Cookie': `${sessionCookie}=${session};`,
         'Origin': urlOrigin,
         'Referer': urlGuestReg,
         'User-Agent': ctx.get('User-Agent'),
@@ -138,14 +148,6 @@ async function submit(ctx: Koa.Context, next: Koa.Next): Promise<void> {
       credentials: 'include',
     });
 
-  const cookies = setCookie(proxy.headers.get('Set-Cookie') ?? '', { map: true });
-  const session = cookies[sessionCookie]?.value;
-  if (!session) {
-    return fwdResponse(proxy, ctx);
-  }
-
-  console.write(`New session: ${session}\n`);
-  ctx.cookies.set(sessionCookie, session);
   return ctx.redirect('/GuestRegConfirm.aspx?gymid=10');
 }
 

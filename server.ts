@@ -33,6 +33,7 @@ async function body(keys: Keys): Promise<string> {
 const importantHeaders = [
   'Cache-Control',
   'Content-Disposition',
+  'Content-Encoding',
   'Content-Length',
   'Content-Type',
   'Last-Modified',

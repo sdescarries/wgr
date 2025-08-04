@@ -11,7 +11,7 @@
   "author": "Simon Descarries",
   "license": "UNLICENSED",
   "dependencies": {
-    "koa": "^2.14.2",
+    "koa": "^3.0.1",
     "koa-body": "^6.0.1",
     "node-html-parser": "^6.1.11",
     "set-cookie-parser": "^2.6.0"
